@@ -1,0 +1,1 @@
+待 UserAgent 的请求头request, err := http.NewRequest(		"GET",		"http://www.zhenai.com/zhenghun",		nil)	if err != nil {		panic(err)	}	request.Header.Add("User-Agent",		userAgent)	client := http.DefaultClient	resp, err := client.Do(request)	if err != nil {		panic(err)	}	defer resp.Body.Close()

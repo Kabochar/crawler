@@ -12,7 +12,7 @@ func ParseCityList(contents []byte) engine.ParseResult {
 	re := regexp.MustCompile(cityListRe)
 	submatch := re.FindAllSubmatch(contents, -1)
 	result := engine.ParseResult{}
-	limit := 1 // 限制搜索次数
+	limit := 10 // 限制搜索次数
 	for _, item := range submatch {
 		result.Items = append(result.Items, string(item[2]))
 		result.Requests = append(result.Requests, engine.Request{

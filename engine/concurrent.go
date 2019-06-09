@@ -1,13 +1,10 @@
 package engine
 
-import (
-	"log"
-)
-
 // 并发引擎
 type ConcurrendEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int
+	ItemChan    chan interface{}
 }
 
 // 任务调度器
@@ -33,13 +30,12 @@ func (e *ConcurrendEngine) Run(seeds ...Request) {
 		e.Scheduler.Submit(request)
 	}
 
-	itemCount := 0
 	for {
 		// 接受 Worker 的解析结果
 		result := <-out
 		for _, item := range result.Items {
-			log.Printf("Got item: #%d: %v\n", itemCount, item)
-			itemCount++
+			// 使用 goroutine 传递内容
+			go func() { e.ItemChan <- item }()
 		}
 
 		// 然后把 Worker 解析出的 Request 送给 Scheduler

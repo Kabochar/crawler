@@ -1,28 +1,31 @@
 package engine
 
-import "log"
+import (
+	"log"
+)
 
 // 并发引擎
 type ConcurrendEngine struct {
-	Scheduler   Scheduler // 任务调度器
-	WorkerCount int       // 任务并发数量
+	Scheduler   Scheduler
+	WorkerCount int
 }
 
 // 任务调度器
 type Scheduler interface {
-	Submit(request Request)              // 提交任务
-	ConfigMasterWorkerChan(chan Request) // 配置初始请求任务
+	Submit(request Request) // 提交任务
+	ConfigMasterWorkerChan(chan Request)
+	WorkerReady(w chan Request)
+	Run()
 }
 
 func (e *ConcurrendEngine) Run(seeds ...Request) {
 
-	in := make(chan Request)               // scheduler的输入
-	out := make(chan ParseResult)          // worker的输出
-	e.Scheduler.ConfigMasterWorkerChan(in) // 把初始请求提交给scheduler
+	out := make(chan ParseResult)
+	e.Scheduler.Run()
 
 	// 创建 goruntine
 	for i := 0; i < e.WorkerCount; i++ {
-		createWorker(in, out)
+		createWorker(out, e.Scheduler)
 	}
 
 	// engine把请求任务提交给 Scheduler
@@ -46,10 +49,12 @@ func (e *ConcurrendEngine) Run(seeds ...Request) {
 	}
 }
 
-// 创建任务，调用worker，分发goroutine
-func createWorker(in chan Request, out chan ParseResult) {
+func createWorker(out chan ParseResult, s Scheduler) {
+	// 为每一个Worker创建一个channel
+	in := make(chan Request)
 	go func() {
 		for {
+			s.WorkerReady(in) // 告诉调度器任务空闲
 			request := <-in
 			result, err := worker(request)
 			if err != nil {

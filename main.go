@@ -10,7 +10,7 @@ import (
 func main() {
 
 	e := engine.ConcurrendEngine{
-		Scheduler:   &scheduler.QueuedScheduler{}, // 这里调用并发调度器
+		Scheduler:   &scheduler.SimpleScheduler{}, // 这里调用并发调度器
 		WorkerCount: 100,
 		ItemChan:    persist.ItemSaver(),
 	}

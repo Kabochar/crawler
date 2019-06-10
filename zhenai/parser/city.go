@@ -24,7 +24,6 @@ func ParseCity(bytes []byte) engine.ParseResult {
 		name := string(item[2])
 		gender := string(gendermatch[k][1])
 
-		result.Items = append(result.Items, "User: "+name)
 		result.Requests = append(result.Requests, engine.Request{
 			Url: string(item[1]),
 			ParseFunc: func(bytes []byte) engine.ParseResult {

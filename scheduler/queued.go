@@ -10,13 +10,13 @@ type QueuedScheduler struct {
 	workerChan chan chan engine.Request
 }
 
+func (s *QueuedScheduler) WorkerChan() chan engine.Request {
+	return make(chan engine.Request)
+}
+
 // 提交请求任务到 requestChannel
 func (s *QueuedScheduler) Submit(request engine.Request) {
 	s.requestChan <- request
-}
-
-func (s *QueuedScheduler) ConfigMasterWorkerChan(chan engine.Request) {
-	panic("implement me")
 }
 
 // 告诉外界有一个 worker 可以接收 request

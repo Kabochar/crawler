@@ -4,7 +4,7 @@ package engine
 type ConcurrendEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int
-	ItemChan    chan interface{}
+	ItemChan    chan Item
 }
 
 // 任务调度器

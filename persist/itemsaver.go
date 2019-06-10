@@ -2,12 +2,19 @@ package persist
 
 import (
 	"context"
+	"crawler/engine"
+	"errors"
 	"gopkg.in/olivere/elastic.v5"
 	"log"
 )
 
-func ItemSaver() chan interface{} {
-	out := make(chan interface{})
+func ItemSaver(index string) (chan engine.Item, error) {
+	client, err := elastic.NewClient(
+		elastic.SetSniff(false)) // 是否处理集群
+	if err != nil {
+		return nil, err
+	}
+	out := make(chan engine.Item)
 	go func() {
 		itemCount := 0
 		for {
@@ -15,32 +22,38 @@ func ItemSaver() chan interface{} {
 			log.Printf("Item Saver: got item # %d: %v", itemCount, item)
 			itemCount++
 
-			_, err := save(item)
+			err := save(client, item, index)
 			if err != nil {
 				log.Printf("Item Saver: err:item, %v, %v", err, item)
 			}
 
 		}
 	}()
-	return out
+	return out, nil
 }
 
 // save content to elasticsearch DB
-func save(item interface{}) (id string, err error) {
-	client, err := elastic.NewClient(
-		elastic.SetSniff(false)) // 是否处理集群
-	if err != nil {
-		return "", err
+func save(client *elastic.Client, item engine.Item, index string) error {
+
+	if item.Type == "" {
+		return errors.New("must supply Type")
 	}
 
-	response, err := client.Index().
-		Index("dating_profile").
-		Type("zhenai").
-		BodyJson(item).
+	indexService := client.Index().
+		Index(index).
+		Type(item.Type).
+		Id(item.Id).
+		BodyJson(item)
+	if item.Id == "" {
+		indexService.Id(item.Id)
+	}
+
+	_, err := indexService.
 		Do(context.Background())
+
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return response.Id, nil
+	return nil
 }

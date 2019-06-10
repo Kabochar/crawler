@@ -1,0 +1,24 @@
+GET http://localhost:9200/dating_profile/zhenai/_search
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-06-10T071409.200.json
+
+###
+
+GET http://localhost:9200/dating_profile/zhenai/_search
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-06-10T070932.200.json
+
+###
+
+GET http://localhost:9200/dating_profile/zhenai/_search
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-06-10T070818.200.json
+
+###
+

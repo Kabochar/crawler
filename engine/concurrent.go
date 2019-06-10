@@ -31,6 +31,9 @@ func (e *ConcurrendEngine) Run(seeds ...Request) {
 
 	// engine把请求任务提交给 Scheduler
 	for _, request := range seeds {
+		if isDuplicated(request.Url) {
+			continue
+		}
 		e.Scheduler.Submit(request)
 	}
 
@@ -44,6 +47,9 @@ func (e *ConcurrendEngine) Run(seeds ...Request) {
 
 		// 然后把 Worker 解析出的 Request 送给 Scheduler
 		for _, request := range result.Requests {
+			if isDuplicated(request.Url) {
+				continue
+			}
 			e.Scheduler.Submit(request)
 		}
 	}
@@ -61,4 +67,17 @@ func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
 			out <- result
 		}
 	}()
+}
+
+// 去重判断。仅限当次运行
+var visitedUrls = make(map[string]bool)
+
+func isDuplicated(url string) bool {
+	if visitedUrls[url] {
+		return true
+	}
+
+	visitedUrls[url] = true
+
+	return false
 }

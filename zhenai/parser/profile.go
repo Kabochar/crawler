@@ -2,7 +2,7 @@ package parser
 
 import (
 	"crawler/engine"
-	"golang-crawler/model"
+	"crawler/model"
 	"regexp"
 	"strconv"
 )
@@ -14,6 +14,7 @@ var weightRe = regexp.MustCompile(`<div class="m-btn purple" [^>]*>([\d]+)kg</di
 var incomeRe = regexp.MustCompile(`<div class="m-btn purple" [^>]*>月收入:([^<]+)</div>`)
 var marriageRe = regexp.MustCompile(`<div class="m-btn purple" [^>]*>([^<]+)</div>`)
 var addressRe = regexp.MustCompile(`<div class="m-btn purple" [^>]*>工作地:([^<]+)</div>`)
+var xinzuoRe = regexp.MustCompile(`<div class="m-btn purple" [^>]*>.*?座([^<]+)</div>`)
 var idUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
 
 func ParseProfile(bytes []byte, url string, name string, gender string) engine.ParseResult {
@@ -33,6 +34,8 @@ func ParseProfile(bytes []byte, url string, name string, gender string) engine.P
 	profile.Income = extractString(bytes, incomeRe)
 	profile.Marriage = extractString(bytes, marriageRe)
 	profile.Address = extractString(bytes, addressRe)
+	profile.Xinzuo = extractString(bytes, xinzuoRe)
+
 	// 解析完用户信息后，没有请求任务
 	result := engine.ParseResult{
 		Items: []engine.Item{

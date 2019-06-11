@@ -17,7 +17,7 @@ import (
 const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML like Gecko) " +
 	"Chrome/51.0.2704.79 Safari/537.36 Edge/14.14931"
 
-var rateLimiter = time.Tick(51 * time.Millisecond)
+var rateLimiter = time.Tick(56 * time.Millisecond)
 
 // 网页内容抓取函数
 func Fetch(url string) ([]byte, error) {
